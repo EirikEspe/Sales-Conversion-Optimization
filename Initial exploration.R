@@ -72,11 +72,13 @@ campaignAd <- campaign %>% mutate(CTR = round((Clicks / Impressions) * 100, 4),
 # Amount spent to show ad per campaign
 campaignAd %>% 
   group_by(xyz_campaign_id) %>% 
-  summarise(sumSpent = sum(Spent)) %>% 
+  summarise(sumSpent = sum(Spent),
+            avgSpent = mean(Spent)) %>% 
   ungroup()
-# Campaign 916:      150
-# Campaign 936:    2 893
-# Campaign 1178:  55 662
+#               Sum spent   Avg. spent 
+# Campaign 916:      150       2.77
+# Campaign 936:    2 893       6.24
+# Campaign 1178:  55 662      89.06
 
 
 
@@ -87,8 +89,9 @@ ggplot(campaignAd, aes(x = xyz_campaign_id, y = Spent)) +
   geom_boxplot() +
   labs(x = "Campaign", y = "Advertising spend")
 
+
 # Scatter plot of impressions and amount spent
-ggplotly(ggplot(campaignAd, aes(Spent, Impressions)) + 
+ggplotly(ggplot(campaignAd, aes(x = Spent, y = Impressions)) + 
            geom_point(aes(colour = xyz_campaign_id), alpha = 0.7) +
            scale_y_continuous(labels = function(x) 
              format(x, big.mark = ",", scientific = FALSE)))
@@ -126,14 +129,51 @@ ggplot(campaign1178, aes(x = Impressions)) +
 
 
 # Histogram of clicks
-ggplot(campaign1178, aes(Clicks)) +
+ggplot(campaign1178, aes(x = Clicks)) +
   geom_histogram(binwidth = 20, colour = "darkgrey") +
   labs(title = "Histogram of number of clicks")
 
 
 # Histogram of amount spent to show the ad
-ggplot(campaign1178, aes(Spent)) +
+ggplot(campaign1178, aes(x = Spent)) +
   geom_histogram(binwidth = 20, colour = "darkgrey") +
   labs(title = "Histogram of amount spent")
-  
 
+
+# Histogram of total conversion: the number of people who enquired about the product
+# after seeing the ad
+ggplot(campaign1178, aes(x = Total_Conversion)) +
+  geom_histogram(binwidth = 2, colour = "darkgrey") +
+  labs(title = "Histogram of total conversion", 
+       subtitle = "The number of people who enquired about the product after seeing the ad", 
+       x = "Total conversion")
+
+
+# Histogram of approved conversion: the total number of people who bought the product
+# after seeing the ad
+ggplot(campaign1178, aes(x = Approved_Conversion)) +
+  geom_histogram(binwidth = 1, colour = "darkgrey") +
+  labs(title = "Histogram of approved conversion",
+       subtitle = "The number of people who bought the product after seeing the ad",
+       x = "Approved conversion")
+
+
+# Boxplot of click-through-rate among age groups and gender
+ggplot(campaign1178, aes(x = age, y = CTR)) + 
+  geom_boxplot(aes(colour = gender))
+
+# Same as scatter plot
+## ggplot(campaign1178, aes(x = age, y = CTR)) + 
+##   geom_point(aes(colour = gender), position = "jitter")
+
+
+# Boxplot of costper click among age groups and gender
+ggplot(campaign1178, aes(x = age, y = CPC)) +
+  geom_boxplot(aes(colour = gender))
+
+# Scatter plot of cost per click
+ggplot(campaign1178, aes(x = age, y = CPC)) +
+  geom_point(aes(colour = gender), position = "jitter")
+
+
+ggplot(campaign1178, aes(x = age, ))
